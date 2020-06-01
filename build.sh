@@ -138,6 +138,19 @@ function build_binary() {
     make build-binary || exit 1
 }
 
+function build_binary_for_arm64() {
+    echo ""
+    echo "----------------------------------------"
+    echo " Create Executable binary from GoMain"
+    echo "----------------------------------------"
+    
+    export GOARCH=arm64
+    export CC="aarch64-linux-gnu-gcc"
+    export ARCH=aarch64
+    export GOPATH=$BASE_DIR/GoMain:$GOPATH
+    make build-binary || exit 1
+}
+
 function build_object() {
     echo ""
     echo "----------------------------------------"
@@ -305,6 +318,20 @@ function build_docker_container() {
     make build-container || exit 1
 }
 
+function create_folders() {
+	echo ""
+    echo "--------------------------------------------"
+    echo "  Create prerequisite Folder [SuperUser]"
+    echo "--------------------------------------------"
+    sudo mkdir -p /var/edge-orchestration/log
+    sudo mkdir -p /var/edge-orchestration/apps
+    sudo mkdir -p /var/edge-orchestration/data/db
+    sudo mkdir -p /var/edge-orchestration/data/cert
+    sudo mkdir -p /var/edge-orchestration/user
+    sudo mkdir -p /var/edge-orchestration/device
+
+}
+
 function run_docker_container() {
     ### Add temporarily, TO DO: move files into container
     echo ""
@@ -389,8 +416,17 @@ case "$1" in
         install_prerequisite
         install_3rdparty_packages
         build_binary
-        build_docker_container
-        run_docker_container
+        create_folders
+	#build_docker_container
+        #run_docker_container
+        ;;
+    "arm64")
+        install_prerequisite
+        install_3rdparty_packages
+        build_binary_for_arm64
+        create_folders
+	#build_docker_container
+        #run_docker_container
         ;;
     "secure")
         set_secure_option
@@ -404,7 +440,8 @@ case "$1" in
         echo "build script"
         echo "Usage:"
         echo "----------------------------------------------------------------------------------------------"
-        echo "  $0                  : build edge-orchestration by default container"
+        echo "  $0                  : build edge-orchestration for native(Linux)"
+	echo "  $0 arm64            : build edge-orchestration for ARM 64 devices"
         echo "  $0 secure           : build edge-orchestration by default container with secure option"
         echo "  $0 container        : build Docker container as build system environmet"
         echo "  $0 container secure : build Docker container as build system environmet with secure option"

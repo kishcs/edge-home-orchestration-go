@@ -25,12 +25,14 @@ import (
 
 	"common/logmgr"
 
-	configuremgr "controller/configuremgr/container"
+	//configuremgr "controller/configuremgr/container"
+	configuremgr "controller/configuremgr/native"
 	"controller/discoverymgr"
 	"controller/scoringmgr"
 	"controller/servicemgr"
 	"controller/securemgr"
-	executor "controller/servicemgr/executor/containerexecutor"
+	//executor "controller/servicemgr/executor/containerexecutor"
+	executor "controller/servicemgr/executor/nativeexecutor"
 
 	"orchestrationapi"
 
@@ -48,8 +50,10 @@ const logPrefix = "interface"
 
 // Handle Platform Dependencies
 const (
-	platform      = "docker"
-	executionType = "container"
+	//platform      = "docker"
+	//executionType = "container"
+	platform      = "linux"
+	executionType = "native"
 
 	edgeDir = "/var/edge-orchestration"
 
