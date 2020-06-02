@@ -417,7 +417,7 @@ case "$1" in
         install_3rdparty_packages
         build_binary
         create_folders
-	#build_docker_container
+		#build_docker_container
         #run_docker_container
         ;;
     "arm64")
@@ -425,7 +425,7 @@ case "$1" in
         install_3rdparty_packages
         build_binary_for_arm64
         create_folders
-	#build_docker_container
+		#build_docker_container
         #run_docker_container
         ;;
     "secure")
@@ -441,7 +441,7 @@ case "$1" in
         echo "Usage:"
         echo "----------------------------------------------------------------------------------------------"
         echo "  $0                  : build edge-orchestration for native(Linux)"
-	echo "  $0 arm64            : build edge-orchestration for ARM 64 devices"
+		echo "  $0 arm64            : build edge-orchestration for ARM 64 devices"
         echo "  $0 secure           : build edge-orchestration by default container with secure option"
         echo "  $0 container        : build Docker container as build system environmet"
         echo "  $0 container secure : build Docker container as build system environmet with secure option"
