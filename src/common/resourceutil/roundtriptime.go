@@ -70,6 +70,153 @@ func processRTT() {
 	}()
 }
 
+func processTotal() {
+    log.Printf(" ==== processTotal() ==== ")
+    go func() {
+        for {
+            calculateScore()
+			//time.Sleep(time.Duration(1) * time.Second)
+			time.Sleep(time.Duration(defaultRttDuration) * time.Second)
+        }
+    }()
+}
+
+func calculateScore() {
+
+	ips, _ = networkhelper.GetInstance().GetOutboundIP()
+	//ips := netInfo.GetIP()
+	log.Printf(" ==== processTotal() ==== LINUX NATIVE ==> [%s] ips", ips)
+	//var st uint64
+	//st = androidexecutor.GetInstance().GetStatus()
+	//log.Printf(" ANDROID ==> [%d] executionStatus", st)
+
+	type Scores struct {
+		Scpu   string `json:"cpu"`
+		Smem   string `json:"mem"`
+		Snet   string `json:"net"`
+		Sren   string `json:"ren"`
+		SIp    string `json:"ip"`
+		Status string `json:"status"`
+		Score  string `json:"score"`
+	}
+
+	var out Scores
+	var netVal float64
+	out.SIp = ips
+
+	out.Scpu = strconv.FormatFloat(cpuScores, 'f', 6, 64)
+	out.Smem = strconv.FormatFloat(mems, 'f', 6, 64)
+	netVal = 1 / (8770 * math.Pow(nets, -0.9))
+	out.Snet = strconv.FormatFloat(netVal, 'f', 6, 64)
+	out.Sren = strconv.FormatFloat(rtts, 'f', 6, 64)
+	finaScore := float64(netVal + (cpuScores / 2) + rtts)
+	//out.Status = strconv.FormatUint(st, 16)
+	out.Score = strconv.FormatFloat(finaScore, 'f', 6, 64)
+
+	// message := "cpu" + cScore + "," + "MemoryAvail" + mem + "," + "NetScore : " + netscore + "," + "RenderScore : " + rendscore + "," + "Score : " + Score
+
+	in, err := json.Marshal(out)
+
+	//ioutil.WriteFile("/storage/emulated/0/Android/data/com.samsung.orchestration.service/files/score.json", []byte(in), 0644)
+	ioutil.WriteFile("/tmp/score.json", []byte(in), 0644)
+
+	//androidexecutor.GetInstance().SetStatus(0)
+	if err != nil {
+		return
+	}
+}
+
+func calculateScore1() {
+
+	ips, _ = networkhelper.GetInstance().GetOutboundIP()
+	 //ips := netInfo.GetIP()
+	 //log.Printf("------------[%s]---------------ips",ips)
+	/*var st uint64
+	st = nativeexecutor.GetInstance().GetStatus()
+	if st == 1 {
+	   log.Printf("------------[%d]--------------- executionStatus",st)
+	}*/
+
+	type Scores struct{
+	   Scpu string `json:"cpu"`
+	   Smem string `json:"mem"`
+	   Snet string `json:"net"`
+	   Sren string `json:"ren"`
+	   SIp string `json:"ip"`
+	   Status string `json:"status"`
+	   Score string `json:"score"`
+	}
+
+	var out Scores
+	var netVal float64
+	
+	out.SIp = ips
+	out.Scpu = strconv.FormatFloat(cpuScores, 'f', 6, 64)
+	out.Smem = strconv.FormatFloat(mems, 'f', 6, 64)
+	netVal = 1 / (8770 * math.Pow(nets, -0.9))
+	out.Snet = strconv.FormatFloat(netVal, 'f', 6, 64)
+	out.Sren = strconv.FormatFloat(rtts, 'f', 6, 64)
+	finaScore := float64(netVal + (cpuScores / 2) + rtts)
+	out.Status = strconv.FormatUint(st, 16)
+	out.Score = strconv.FormatFloat(finaScore, 'f', 6, 64)
+
+   // message := "cpu" + cScore + "," + "MemoryAvail" + mem + "," + "NetScore : " + netscore + "," + "RenderScore : " + rendscore + "," + "Score : " + Score
+
+	in, err := json.Marshal(out)
+
+	//ioutil.WriteFile("/tmp/score.json", []byte(in), 0644)
+
+	//nativeexecutor.GetInstance().SetStatus(0)
+
+	service1, err := ioutil.ReadFile("serverip.txt")
+
+	if err != nil {
+		log.Println(logPrefix, "Dashboard error : ", err.Error())
+		return
+	}
+
+	service := string(service1)
+	if len(service) <= 0 {
+		log.Printf("---service NULL ")
+		return
+	}
+	service = strings.TrimSuffix(service, "\n")
+	if len(service) <= 0 {
+		log.Printf("service NULL ")
+		return
+	}
+
+	//service := "107.108.87.9:1046"
+	tcpAddr, err := network.ResolveTCPAddr("tcp4", service)
+	if err != nil {
+		log.Println(logPrefix, "KKK error : ", err.Error())
+		return
+	}
+	conn, err := network.DialTCP("tcp", nil, tcpAddr)
+	if err != nil {
+		log.Println(logPrefix, "Dashboard error : ", err.Error())
+		return
+	}
+	_, err = conn.Write([]byte(in))
+	if err != nil {
+		log.Println(logPrefix, "KKK error : ", err.Error())
+		return
+	}
+	result, err := ioutil.ReadAll(conn)
+	if err != nil {
+		log.Println(logPrefix, "KKK error : ", err.Error())
+		return
+	}
+
+	fmt.Println(string(result))
+
+	//nativeexecutor.GetInstance().SetStatus(0)
+
+	if err != nil {
+			return
+	}
+}
+
 func checkRTT(ip string) (rtt float64) {
 	targetURL := helper.MakeTargetURL(ip, internalPort, pingAPI)
 

@@ -91,6 +91,7 @@ func GetMonitoringInstance() *MonitorImpl {
 	monitoringExecutor.cpuScoring = processCPUInfo
 	monitoringExecutor.memScoring = processMEMInfo
 	monitoringExecutor.rttScoring = processRTT
+	monitoringExecutor.ttlScoring = processTotal
 	return &monitoringExecutor
 }
 
@@ -100,6 +101,7 @@ func (m MonitorImpl) StartMonitoringResource() {
 	m.cpuScoring()
 	m.memScoring()
 	m.rttScoring()
+	m.ttlScoring()
 }
 
 // GetResource returns a resource value that matches resourceName
