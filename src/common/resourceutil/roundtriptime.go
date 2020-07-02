@@ -118,10 +118,12 @@ func calculateScore() {
 	in, err := json.Marshal(out)
 
 	//ioutil.WriteFile("/storage/emulated/0/Android/data/com.samsung.orchestration.service/files/score.json", []byte(in), 0644)
+	log.Printf(" ==== processTotal() ==== LINUX NATIVE ==> Write to file /tmp/score.json")
 	ioutil.WriteFile("/tmp/score.json", []byte(in), 0644)
 
 	//androidexecutor.GetInstance().SetStatus(0)
 	if err != nil {
+		log.Println(logPrefix, " ==== processTotal() ==== LINUX NATIVE ==> Score saving error : ", err.Error())
 		return
 	}
 }
@@ -157,7 +159,7 @@ func calculateScore1() {
 	out.Snet = strconv.FormatFloat(netVal, 'f', 6, 64)
 	out.Sren = strconv.FormatFloat(rtts, 'f', 6, 64)
 	finaScore := float64(netVal + (cpuScores / 2) + rtts)
-	out.Status = strconv.FormatUint(st, 16)
+	//out.Status = strconv.FormatUint(st, 16)
 	out.Score = strconv.FormatFloat(finaScore, 'f', 6, 64)
 
    // message := "cpu" + cScore + "," + "MemoryAvail" + mem + "," + "NetScore : " + netscore + "," + "RenderScore : " + rendscore + "," + "Score : " + Score
