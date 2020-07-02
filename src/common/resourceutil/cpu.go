@@ -51,12 +51,8 @@ func processCPUInfo() {
 			checkCPUFreq()
 			checkCPUCount()
 			
-			cpuScores = (
-							(1 / (5.66 * math.Pow(cpuF, -0.66))) +
-                        	(1 / (3.22 * math.Pow(cpuU, -0.241))) +
-							(1 / (4 * math.Pow(cpuC, -0.3)))
-						) / 3
-						   
+			cpuScores = ((1 / (5.66 * math.Pow(cpuF, -0.66))) + (1 / (3.22 * math.Pow(cpuU, -0.241))) + (1 / (4 * math.Pow(cpuC, -0.3)))) / 3						   
+			
 			time.Sleep(time.Duration(defaultProcessingTime) * time.Second)
 		}
 	}()
