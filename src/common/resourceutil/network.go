@@ -19,17 +19,18 @@ package resourceutil
 
 import (
 	"log"
-	"strings"
 	"time"
+	"strings"
 
 	resourceDB "db/bolt/resource"
-
 	netutil "github.com/vishvananda/netlink"
 )
 
 type netUtil struct {
 	linkList func() ([]netutil.Link, error)
 }
+
+var nets float64
 
 var (
 	net = netUtil{}
@@ -115,7 +116,7 @@ func checkNetworkBandwidth() {
 	info := resourceDB.ResourceInfo{}
 	info.Name = NetBandwidth
 	info.Value = float64(total / count)
-
+        nets = info.Value
 	err = resourceDBExecutor.Set(info)
 	if err != nil {
 		log.Println(logPrefix, "DB error : ", err.Error())

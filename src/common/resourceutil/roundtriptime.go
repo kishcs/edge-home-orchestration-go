@@ -29,7 +29,7 @@ import (
 	"encoding/json"
 	"common/networkhelper"
 	"restinterface/resthelper"
-	"controller/servicemgr/executor/nativeexecutor"
+	//"controller/servicemgr/executor/nativeexecutor"
 
 	network "net"
 	netDB "db/bolt/network"        
@@ -40,6 +40,9 @@ const (
 	internalPort       = 56002
 	defaultRttDuration = 5
 )
+
+var ips string
+var rtts float64
 
 var (
 	helper        resthelper.RestHelper

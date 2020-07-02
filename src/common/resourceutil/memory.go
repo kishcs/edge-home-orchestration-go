@@ -29,7 +29,7 @@ import (
 type memUtil struct {
 	virtualMemory func() (*memutil.VirtualMemoryStat, error)
 }
-
+var mems float64
 var (
 	mem = memUtil{}
 )
@@ -59,6 +59,7 @@ func checkMemoryAvailable() {
 	info := resourceDB.ResourceInfo{}
 	info.Name = MemAvailable
 	info.Value = float64(memStat.Available) / 1024
+        mems = info.Value
 
 	err = resourceDBExecutor.Set(info)
 	if err != nil {

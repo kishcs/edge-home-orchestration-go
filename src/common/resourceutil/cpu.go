@@ -20,10 +20,15 @@ package resourceutil
 import (
 	"log"
 	"time"
-
-	commoncpu "common/resourceutil/cpu"
+    "math"
 	resourceDB "db/bolt/resource"
+	commoncpu "common/resourceutil/cpu"
 )
+
+var cpuScores float64
+var cpuU float64
+var cpuF float64
+var cpuC float64
 
 type cpuUtil struct {
 	percent func(interval time.Duration, percpu bool) ([]float64, error)
@@ -45,7 +50,13 @@ func processCPUInfo() {
 			checkCPUUsage()
 			checkCPUFreq()
 			checkCPUCount()
-
+			
+			cpuScores = (
+							(1 / (5.66 * math.Pow(cpuF, -0.66))) +
+                        	(1 / (3.22 * math.Pow(cpuU, -0.241))) +
+							(1 / (4 * math.Pow(cpuC, -0.3)))
+						) / 3
+						   
 			time.Sleep(time.Duration(defaultProcessingTime) * time.Second)
 		}
 	}()
@@ -68,7 +79,7 @@ func checkCPUUsage() {
 	info := resourceDB.ResourceInfo{}
 	info.Name = CPUUsage
 	info.Value = usage
-
+        cpuU = usage
 	err = resourceDBExecutor.Set(info)
 	if err != nil {
 		log.Println(logPrefix, "DB error : ", err.Error())
@@ -86,7 +97,7 @@ func checkCPUFreq() (out float64, err error) {
 	info := resourceDB.ResourceInfo{}
 	info.Name = CPUFreq
 	info.Value = infos[0].Mhz
-
+        cpuF = info.Value
 	err = resourceDBExecutor.Set(info)
 	if err != nil {
 		log.Println(logPrefix, "DB error : ", err.Error())
@@ -104,7 +115,7 @@ func checkCPUCount() {
 	info := resourceDB.ResourceInfo{}
 	info.Name = CPUCount
 	info.Value = float64(len(infos))
-
+        cpuC = info.Value
 	err = resourceDBExecutor.Set(info)
 	if err != nil {
 		log.Println(logPrefix, "DB error : ", err.Error())
