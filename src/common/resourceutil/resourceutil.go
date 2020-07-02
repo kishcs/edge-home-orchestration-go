@@ -35,6 +35,7 @@ type MonitorImpl struct {
 	cpuScoring func()
 	memScoring func()
 	rttScoring func()
+	ttlScoring func()
 }
 
 var (
